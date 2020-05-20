@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>color gradient</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+
+<body>
+    <div id="app"></div>
+    <script src="../js/three.min.js"></script>
+    <script src="../js/tween.umd.js"></script>
+    <script src="../js/gradient.js"></script>
+    <script src="../js/three/init.js"></script>
+    <script src="../js/three/resize.js"></script>
+    <script src="../js/three/animate.js"></script>
+    <script>
+        window.onload = function () {
+            const startColor = '0xf00';
+            const endColor = '0x00f';
+
+            const startArr = colorGradient(startColor);
+            const endArr = colorGradient(endColor);
+
+            const tween = new TWEEN.Tween({
+                red: startArr[0],
+                green: startArr[1],
+                blue: startArr[2],
+            }).to({
+                red: endArr[0],
+                green: endArr[1],
+                blue: endArr[2],
+            }, 5000)
+            .yoyo(true)
+            .repeat(Infinity)
+            .onUpdate(({red, green, blue}) => {
+                const r = parseInt(red);
+                const g = parseInt(green);
+                const b = parseInt(blue);
+                initReturn.renderer.setClearColor(new THREE.Color(`rgb(${r}, ${g}, ${b})`));
+            })
+            .start();
+            
+            const initReturn = init('app');
+            const clock = new THREE.Clock();
+
+            animate(initReturn, () => {});
+            window.addEventListener('resize', () => { resize(initReturn) });
+        }
+    </script>
+</body>
+
+</html>
