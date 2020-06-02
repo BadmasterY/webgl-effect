@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenes Switch</title>
+    <style>
+        html,
+        body,
+        #app {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script src="../js/three.min.js"></script>
+    <script>
+        window.onload = function () {
+            let timer = null;
+            const app = document.getElementById('app');
+            let height = 0;
+            let target, next;
+
+            const scene_1 = new THREE.Scene();
+            scene_1.background = new THREE.Color(0xff4400);
+            target = scene_1;
+
+            const scene_2 = new THREE.Scene();
+            scene_2.background = new THREE.Color(0x2d8cf0);
+            next = scene_2;
+
+            const boxGeometry = new THREE.BoxBufferGeometry();
+            const box = new THREE.Mesh(boxGeometry);
+            scene_1.add(box);
+
+            const sphereGeometry = new THREE.SphereBufferGeometry();
+            const sphere = new THREE.Mesh(sphereGeometry);
+            scene_2.add(sphere);
+
+            const camera = new THREE.PerspectiveCamera(75, app.clientWidth / app.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+
+            const renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+            renderer.setSize(app.clientWidth, app.clientHeight)
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setScissorTest(true); // 启用剪裁检测
+
+            app.appendChild(renderer.domElement);
+
+            renderer.setAnimationLoop(() => {
+                render();
+            });
+
+            window.addEventListener('resize', onResize, false);
+            window.addEventListener('mousewheel', onMouseWheel, false);
+
+            function render() {
+                // 设置裁剪起点与终点
+                renderer.setScissor(0, 0, app.clientWidth, app.clientHeight - height);
+                renderer.render(target, camera);
+
+                renderer.setScissor(0, app.clientHeight - height, app.clientWidth, app.clientHeight);
+                renderer.render(next, camera);
+            }
+
+            function onResize() {
+                height = height === 0 ? 0 : app.clientHeight;
+                camera.aspect = app.clientWidth / app.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(app.clientWidth, app.clientHeight);
+            }
+
+            function onMouseWheel(event) {
+                if (timer) clearTimer();
+                console.log(height);
+
+                const { deltaY } = event;
+
+                if (deltaY > 0 && height === 0) {
+                    height = app.clientHeight;
+                    let temp = target;
+                    target = next;
+                    next = temp;
+                    temp = null;
+                }
+
+                if (deltaY < 0 && height === app.clientHeight) {
+                    height = 0;
+                    let temp = target;
+                    target = next;
+                    next = temp;
+                    temp = null;
+                }
+
+                timer = setInterval(() => {
+                    height -= deltaY / 10;
+                    if (height < 0) {
+                        height = 0;
+                        clearTimer();
+                    } else if (height > app.clientHeight) {
+                        height = app.clientHeight;
+                        clearTimer();
+                    }
+                }, 30);
+            }
+
+            function clearTimer() {
+                clearInterval(timer);
+                timer = null;
+            }
+        }
+    </script>
+</body>
+
+</html>
