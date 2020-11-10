@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Demo</title>
+    <link type="text/css" rel="stylesheet"
+        href="https://rawgit.com/patriciogonzalezvivo/glslEditor/gh-pages/build/glslEditor.css">
+    <style>
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 0 10px #aaa;
+            border-radius: 5px;
+        }
+
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <p>Please move the mouse over the canvas.</p>
+    <p>Mouse position: <span id="position">N/A</span></p>
+    <script type="application/javascript"
+        src="https://rawgit.com/patriciogonzalezvivo/glslEditor/gh-pages/build/glslEditor.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            // Normalized mouse position: 0.0 - 1.0
+            const mouse = { x: 0.188, y: 0.211 };
+
+            const positionSpan = document.getElementById('position');
+
+            const canvas = document.getElementById('canvas');
+            const gl = canvas.getContext('webgl');
+
+            const vertexShaderSource =
+                `
+                void main() {}
+            `;
+
+            const fragmentShaderSource =
+                `
+                #ifdef GL_ES
+                precision mediump float;
+                #endif
+
+                uniform vec4 u_FragColor;
+                void main() {
+                    gl_FragColor = u_FragColor;
+                }
+            `;
+
+            const program = initShader(gl, vertexShaderSource, fragmentShaderSource);
+
+            const u_FragColor = gl.getUniformLocation(program, 'u_FragColor');
+
+            const vertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+            gl.uniform4f(u_FragColor, Math.random(), Math.random(), Math.random(), 1.0);
+
+            gl.clearColor(0, 0, 0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+        }
+
+        function initShader(gl, vertex, fragment) {
+            const vertexShader = createShader(gl, vertex, gl.VERTEX_SHADER);
+            const fragementShader = createShader(gl, fragment, gl.FRAGMENT_SHADER);
+
+            const program = gl.createProgram();
+
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragementShader);
+            gl.linkProgram(program);
+            gl.useProgram(program);
+
+            gl.getShaderInfoLog(vertexShader)
+            gl.getShaderInfoLog(fragementShader)
+
+            return program;
+        }
+
+        function createShader(gl, shaderSource, type) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, shaderSource);
+            gl.compileShader(shader);
+
+            return shader;
+        }
+    </script>
+</body>
+
+</html>

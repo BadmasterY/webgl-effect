@@ -14,17 +14,52 @@
 </head>
 <body>
     <h2>Three.js:</h2>
-    <ul>
-        <li>
-            <a href="./pages/threejs_morphing.html">Morphing</a>
-        </li>
-        <li>
-            <a href="./pages/threejs_color_gradient.html">Color gradient</a>
-        </li>
-        <li>
-            <a href="./pages/threejs_scenes_switch.html">Scenes switch</a>
-        </li>
-    </ul>
+    <ul id="three_ul"></ul>
     <h2>WebGL:</h2>
+    <ul id="webgl_ul"></ul>
+    <script>
+        window.onload = function() {
+            const threeList = [
+                {
+                    name: 'Morphing',
+                    link: './pages/threejs_morphing.html',
+                },
+                {
+                    name: 'Color gradient',
+                    link: './pages/threejs_color_gradient.html',
+                },
+                {
+                    name: 'Scenes switch',
+                    link: './pages/threejs_scenes_switch.html',
+                },
+            ];
+
+            const webglList = [
+                {
+                    name: 'Random',
+                    link: './pages/webgl_random.html',
+                },
+            ];
+
+            const threeUl = document.getElementById('three_ul');
+            const webglUl = document.getElementById('webgl_ul');
+
+            let threeString = '';
+            let webglString = '';
+
+            for(let i = 0; i < threeList.length; i++) {
+                const { name, link } = threeList[i];
+                threeString += `<li><a href='${link}'>${name}</a></li>`
+            }
+
+            for(let i = 0; i < webglList.length; i++) {
+                const { name, link } = webglList[i];
+                webglString += `<li><a href='${link}'>${name}</a></li>`
+            }
+
+            threeUl.innerHTML = threeString;
+            webglUl.innerHTML = webglString;
+        }
+    </script>
 </body>
 </html>
